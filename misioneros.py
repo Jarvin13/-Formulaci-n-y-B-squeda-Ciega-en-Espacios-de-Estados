@@ -103,3 +103,58 @@ def factor_ramificacion_efectivo(n, d):
     return b
 
 
+def analizar_espacio():
+    """Cuenta los estados alcanzables y el factor de ramificacion promedio."""
+    alcanzables = {ESTADO_INICIAL}
+    cola = deque([ESTADO_INICIAL])
+    while cola:
+        estado = cola.popleft()
+        for _, nuevo in sucesores(estado):
+            if nuevo not in alcanzables:
+                alcanzables.add(nuevo)
+                cola.append(nuevo)
+    total_sucesores = sum(len(sucesores(s)) for s in alcanzables)
+    print("===== ESPACIO DE ESTADOS =====")
+    print(f"Estados alcanzables    : {len(alcanzables)}")
+    print(f"Ramificacion promedio  : {total_sucesores / len(alcanzables):.3f}")
+
+
+def mostrar_camino(camino):
+    estado = ESTADO_INICIAL
+    print("   ", estado)
+    for accion in camino:
+        estado = resultado(estado, accion)
+        lado = "->" if estado[2] == 0 else "<-"
+        print(f"    {lado} lleva {accion[0]}M {accion[1]}C  =>  {estado}")
+
+
+def medir(nombre, algoritmo, repeticiones=1000):
+    # Se repite muchas veces porque una sola ejecucion tarda microsegundos
+    inicio = time.perf_counter()
+    for _ in range(repeticiones):
+        camino, expandidos, max_frontera = algoritmo()
+    tiempo = (time.perf_counter() - inicio) / repeticiones
+
+    b_ef = factor_ramificacion_efectivo(expandidos, len(camino))
+
+    print(f"\n===== {nombre} =====")
+    mostrar_camino(camino)
+    print(f"Nodos expandidos       : {expandidos}")
+    print(f"Tiempo promedio (s)    : {tiempo:.8f}")
+    print(f"Longitud del camino    : {len(camino)}")
+    print(f"Tamano max. frontera   : {max_frontera}")
+    print(f"Factor ramif. efectivo : {b_ef:.4f}")
+    return nombre, expandidos, tiempo, len(camino), max_frontera, b_ef
+
+
+if __name__ == "__main__":
+    analizar_espacio()
+    filas = [medir("BFS", bfs), medir("DFS", dfs)]
+
+    print("\n===== TABLA COMPARATIVA =====")
+    print(f"{'Alg.':<5}{'Expandidos':>12}{'Tiempo (s)':>14}{'Camino':>8}{'Max front.':>12}{'b*':>8}")
+    for n, e, t, l, f, b in filas:
+        print(f"{n:<5}{e:>12}{t:>14.8f}{l:>8}{f:>12}{b:>8.4f}")
+
+
+
