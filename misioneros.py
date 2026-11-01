@@ -49,3 +49,48 @@ def sucesores(estado):
         if es_valido(nuevo):
             lista.append((accion, nuevo))
     return lista
+
+def bfs():
+    """Busqueda en anchura usando una cola (FIFO)."""
+    frontera = deque([(ESTADO_INICIAL, [])])  # (estado, camino de acciones)
+    visitados = set()
+    expandidos = 0
+    max_frontera = 1
+
+    while frontera:
+        estado, camino = frontera.popleft()
+        if estado == ESTADO_OBJETIVO:
+            return camino, expandidos, max_frontera
+        if estado in visitados:
+            continue
+        visitados.add(estado)
+        expandidos += 1
+        for accion, nuevo in sucesores(estado):
+            if nuevo not in visitados:
+                frontera.append((nuevo, camino + [accion]))
+        max_frontera = max(max_frontera, len(frontera))
+
+    return None, expandidos, max_frontera
+
+
+def dfs():
+    """Busqueda en profundidad usando una pila (LIFO)."""
+    frontera = [(ESTADO_INICIAL, [])]  # (estado, camino de acciones)
+    visitados = set()
+    expandidos = 0
+    max_frontera = 1
+
+    while frontera:
+        estado, camino = frontera.pop()
+        if estado == ESTADO_OBJETIVO:
+            return camino, expandidos, max_frontera
+        if estado in visitados:
+            continue
+        visitados.add(estado)
+        expandidos += 1
+        for accion, nuevo in sucesores(estado):
+            if nuevo not in visitados:
+                frontera.append((nuevo, camino + [accion]))
+        max_frontera = max(max_frontera, len(frontera))
+
+    return None, expandidos, max_frontera
