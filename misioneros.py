@@ -94,3 +94,12 @@ def dfs():
         max_frontera = max(max_frontera, len(frontera))
 
     return None, expandidos, max_frontera
+
+def factor_ramificacion_efectivo(n, d):
+    """Busca b* tal que n = b* + b*^2 + ... + b*^d (por tanteo, paso 0.0001)."""
+    b = 1.0
+    while sum(b ** i for i in range(1, d + 1)) < n:
+        b += 0.0001
+    return b
+
+
