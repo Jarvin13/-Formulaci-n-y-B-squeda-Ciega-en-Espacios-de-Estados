@@ -15,3 +15,37 @@ ESTADO_OBJETIVO = (0, 0, 0)
 
 # Acciones: (misioneros en el bote, canibales en el bote)
 ACCIONES = [(1, 0), (2, 0), (0, 1), (0, 2), (1, 1)]
+
+def es_valido(estado):
+    """Un estado es valido si ninguna orilla tiene mas canibales que misioneros
+    (cuando en esa orilla hay al menos un misionero)."""
+    m, c, b = estado
+    if m < 0 or m > 3 or c < 0 or c > 3:
+        return False
+    # Orilla izquierda
+    if m > 0 and c > m:
+        return False
+    # Orilla derecha
+    if (3 - m) > 0 and (3 - c) > (3 - m):
+        return False
+    return True
+
+
+def resultado(estado, accion):
+    """Modelo de transicion: aplica la accion y devuelve el nuevo estado."""
+    m, c, b = estado
+    dm, dc = accion
+    if b == 1:  # el bote va de izquierda a derecha
+        return (m - dm, c - dc, 0)
+    else:       # el bote va de derecha a izquierda
+        return (m + dm, c + dc, 1)
+
+
+def sucesores(estado):
+    """Devuelve la lista de (accion, nuevo_estado) validos."""
+    lista = []
+    for accion in ACCIONES:
+        nuevo = resultado(estado, accion)
+        if es_valido(nuevo):
+            lista.append((accion, nuevo))
+    return lista
